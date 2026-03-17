@@ -126,10 +126,23 @@ Mark these moments explicitly so they stand out:
 
 When running in Deep Mode, use the Task tool to spawn each persona as a **separate agent**. This produces genuinely independent reasoning — each agent literally cannot anticipate what the others will say.
 
+### Model Selection for Agents
+
+Choose the model for spawned persona agents based on topic complexity:
+
+| Complexity | Model | When to use |
+|---|---|---|
+| **Standard** | `sonnet` | Default for most topics — tradeoff comparisons, standard architecture, strategy, product decisions |
+| **Complex** | `opus` | Multi-domain architecture (3+ domains like backend + frontend + DB + infra), novel system design with 5+ competing constraints, regulatory/compliance-heavy decisions, or when the user explicitly requests deeper reasoning |
+
+**Default is `sonnet`** — it handles architecture, system design, and strategy discussions well. Only escalate to `opus` when the topic genuinely requires holding many interacting constraints simultaneously or involves domains where subtle second-order consequences matter.
+
+Always set the `model` parameter explicitly when spawning agents — do not rely on inheritance or defaults.
+
 ### Hybrid Round Strategy
 
 **Round 1 — Parallel (independent blind perspectives):**
-- Spawn all persona agents simultaneously using the Task tool with `subagent_type: "general-purpose"`
+- Spawn all persona agents simultaneously using the Task tool with `subagent_type: "general-purpose"` and `model: "sonnet"` (or `"opus"` per the model selection table above)
 - Each agent receives: the topic, their persona card (name, role, bias, stakes), and instructions to give their opening position in 2-4 sentences
 - Agents run in parallel — they cannot see each other's responses
 - After all complete, the orchestrator (you) assembles their responses with bold speaker names, writes the tension tracker, and presents to the user
